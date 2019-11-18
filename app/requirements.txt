@@ -5,7 +5,7 @@ blinker==1.4
 certifi==2019.3.9
 chardet==3.0.4
 Click==7.0
-cryptography==2.1.4
+cryptography==2.3
 datadog==0.28.0
 ddtrace==0.30.2
 decorator==4.4.0
