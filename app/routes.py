@@ -9,8 +9,20 @@ from app.models import User,Post, CrashLocationPoint
 import logging
 import json
 
+from ddtrace import patch_all; patch_all(logging=True)
+import logging
+from ddtrace import tracer
+
 
 from datadog import initialize, statsd
+
+
+FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
+          '[dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
+          '- %(message)s')
+logging.basicConfig(format=FORMAT)
+log = logging.getLogger(__name__)
+log.level = logging.INFO
 
 options = {
     'statsd_host':'127.0.0.1',
@@ -30,15 +42,20 @@ app.logger.setLevel(logging.INFO)
 @app.route('/')
 @app.route('/index')
 @login_required
+@tracer.wrap()
 def index():
-   
-
     users = Post.query.all()
-    for user in users:
-        print (user.body)
+    log.info('Index Get')
     return render_template('index.html',title='Home', posts=users)
 
+
+
+
+
+
+
 @app.route('/crashPoint/getAll', methods=['GET'])
+@tracer.wrap()
 def getAllPoints():
     dict = {}
     i = 0
@@ -56,8 +73,10 @@ def getAllPoints():
         i = i + 1
         statsd.set('point_loop_i', i, tags=["environment:laptop"])
 
-    print(dict)
+
+    #print(dict)
     jdict = json.dumps(dict)
+    log.info('crashpoint/getall returned')
 
     return Response(jdict, status=200, mimetype = 'application/json')
 
