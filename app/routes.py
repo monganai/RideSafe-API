@@ -37,8 +37,6 @@ logging.basicConfig(level=logging.DEBUG)
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
 
-
-
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -103,10 +101,7 @@ def addCrashLocationPoint():
 #@login_required
 def addPost():
     post = Post()
-    #print('post recieved')
     incoming = request.get_json()
-    #print(incoming['username'])
-    #print(incoming['body'])
     post.body = incoming['body']
     post.user_id = incoming['username']
     db.session.add(post)
