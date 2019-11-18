@@ -47,3 +47,15 @@ class CrashLocationPoint(db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+
+
+class CrashDataPoint(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    gforce = db.Column(db.String(140))
+    rotation = db.Column(db.String(140))
+    classification = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<CrashLocationPoint {}>'.format(self.body)

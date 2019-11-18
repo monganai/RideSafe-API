@@ -5,16 +5,15 @@ from flask_login import logout_user,current_user, login_user
 from werkzeug.urls import url_parse
 from app.forms import RegistrationForm
 from flask_login import login_required
-from app.models import User,Post, CrashLocationPoint
+from app.models import User,Post, CrashLocationPoint, CrashDataPoint
 import logging
 import json
-
 from ddtrace import patch_all; patch_all(logging=True)
 import logging
 from ddtrace import tracer
-
-
 from datadog import initialize, statsd
+import os
+
 
 
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
@@ -36,6 +35,27 @@ logging.basicConfig(level=logging.DEBUG)
 
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
+
+@app.route('/loadtd')
+def loadtd():
+    CrashDataPoint.query.delete()
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    filepath = os.path.join(basedir, 'TrainingData.txt')
+    with open(filepath) as fp:
+        while fp.readline():
+            line = fp.readline()
+            list = line.split()
+            point = CrashDataPoint()
+            point.gforce=list[0]
+            point.rotation=list[1]
+            point.classification=list[2]
+            db.session.add(point)
+            db.session.commit()
+
+
+    return Response(status=200, mimetype = 'application/json')
+
+
 
 @app.route('/')
 @app.route('/index')
