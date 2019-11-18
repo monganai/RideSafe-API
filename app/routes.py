@@ -1,24 +1,21 @@
 from app import app,db
 from flask import render_template,flash,redirect,url_for,request,Response
-from app.forms import LoginForm
-from flask_login import logout_user,current_user, login_user
+from app.forms import LoginForm, RegistrationForm
+from flask_login import logout_user,current_user, login_user,login_required
 from werkzeug.urls import url_parse
-from app.forms import RegistrationForm
-from flask_login import login_required
 from app.models import User,Post, CrashLocationPoint, CrashDataPoint
 import logging
 import json
 from ddtrace import patch_all; patch_all(logging=True)
-import logging
 from ddtrace import tracer
 from datadog import initialize, statsd
 import os
 
-
-
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
           '[dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
           '- %(message)s')
+
+
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
@@ -29,10 +26,7 @@ options = {
 }
 
 initialize(**options)
-
 logging.basicConfig(level=logging.DEBUG)
-
-
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
 
@@ -55,8 +49,6 @@ def loadtd():
 
     return Response(status=200, mimetype = 'application/json')
 
-
-
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -65,12 +57,6 @@ def index():
     users = Post.query.all()
     log.info('Index Get')
     return render_template('index.html',title='Home', posts=users)
-
-
-
-
-
-
 
 @app.route('/crashPoint/getAll', methods=['GET'])
 @tracer.wrap()
@@ -90,9 +76,6 @@ def getAllPoints():
         dict[t2] = long
         i = i + 1
         statsd.set('point_loop_i', i, tags=["environment:laptop"])
-
-
-    #print(dict)
     jdict = json.dumps(dict)
     log.info('crashpoint/getall returned')
 
@@ -130,10 +113,6 @@ def addPost():
 
     return render_template('post.html',title='Home', post=post)
 
-
-
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -151,9 +130,6 @@ def login():
             next_page = url_for('index')
         return redirect(next_page)
 
-
-
-
     return render_template('login.html', title='Sign In', form=form)
 
 
@@ -161,9 +137,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
-
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

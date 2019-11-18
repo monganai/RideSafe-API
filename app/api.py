@@ -4,7 +4,6 @@ import logging
 import os
 from app.models import User, Post
 
-
 patch_all()
 
 #tracer.configure(
