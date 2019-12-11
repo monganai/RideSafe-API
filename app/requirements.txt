@@ -7,7 +7,7 @@ chardet==3.0.4
 Click==7.0
 cryptography==2.3
 datadog==0.28.0
-ddtrace==0.30.2
+ddtrace==0.31.0
 decorator==4.4.0
 dominate==2.4.0
 elasticsearch==7.0.5
