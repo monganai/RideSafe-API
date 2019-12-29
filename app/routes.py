@@ -15,18 +15,17 @@ FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
           '[dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
           '- %(message)s')
 
-
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
 
-options = {
-    'statsd_host':'127.0.0.1',
-    'statsd_port':8125
-}
+#options = {
+ #   'statsd_host':'127.0.0.1',
+  #  'statsd_port':8125
+#}
 
-initialize(**options)
-logging.basicConfig(level=logging.DEBUG)
+#initialize(**options)
+logging.basicConfig()
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
 
@@ -75,9 +74,9 @@ def getAllPoints():
         dict[t1] = lat
         dict[t2] = long
         i = i + 1
-        statsd.set('point_loop_i', i, tags=["environment:laptop"])
+ #       statsd.set('point_loop_i', i, tags=["environment:laptop"])
     jdict = json.dumps(dict)
-    log.info('crashpoint/getall returned')
+    app.logger.info('crashpoint/getall returned')
 
     return Response(jdict, status=200, mimetype = 'application/json')
 
