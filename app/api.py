@@ -6,15 +6,15 @@ from app.models import User, Post
 
 patch_all()
 
-tracer.configure(
+#tracer.configure(
 #Docker tracer configuration
-    hostname='datadog-agent',
-    port=8126,
+ #   hostname='datadog-agent',
+  #  port=8126,
 
 #kubernetes tracer configuration.
     #hostname=os.environ['DD_AGENT_HOST'],
     #port=os.environ['DD_TRACE_AGENT_PORT'],
-)
+#)
 
 
 @app.shell_context_processor

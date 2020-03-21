@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html>
-<title>RideSafe</title>
+  <head>
+    <title>RideSafe</title>
+    <script
+    src="https://www.datadoghq-browser-agent.com/datadog-rum-us.js"
+    type="text/javascript">
+  </script>
+  <script>
+    window.DD_RUM && window.DD_RUM.init({
+      clientToken: 'pub587c7197e63cd75a70f061ad7913676b',
+      applicationId: 'b2648a2b-bda1-4bd7-99f0-775ef0eb9a5e',
+    });
+  </script>
+  </head>
+
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -57,6 +71,7 @@ body, html {
     <a href="#home" class="w3-bar-item w3-button">HOME</a>
     <a href="#about" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-user"></i> ABOUT</a>
     <a href="#contact" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-envelope"></i> CONTACT</a>
+    <a href="{{ url_for('gallery') }}" class="w3-bar-item w3-button w3-hide-small"><i class="fa fa-envelope"></i> Gallery</a>
     <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-red">
       <i class="fa fa-search"></i>
     </a>
@@ -77,8 +92,12 @@ body, html {
   </div>
 </div>
 
+
+
+
+
 <!-- Container (About Section) -->
-<div class="w3-content w3-container w3-padding-64" id="about">
+<div class="w3-content w3-container w3-padding-32" id="about">
   <h3 class="w3-center">ABOUT US</h3>
   <p>Accidents occur quite often when mountainbiking - this is a given with such an extreme sport. Help can be difficult to get at the best of times, however it is extremely dificult when you are far into the mountains, sometimes alone and potentially unconsious.
   RideSafe was designed to get you help in hard to reach locations witout your input - automatically.
@@ -87,14 +106,16 @@ Once RideSafe determines you need help - A text message will be sent to your cho
   <div class="w3-row">
     <div class="w3-col m6 w3-center w3-padding-large">
       <p><b><i class="fa fa-user w3-margin-right"></i>RideSafe</b></p><br>
-      <img src="https://raw.githubusercontent.com/monganai/RideSafeDataCollection/master/icon.png" class="w3-round w3-image w3-opacity w3-hover-opacity-off" alt="Photo of Me" width="500" height="333">
+      <img src="https://raw.githubusercontent.com/monganai/RideSafeDataCollection/master/icon.png" class="w3-round w3-image" alt="Photo of Me" width="350" height="200">
     </div>
 
     <!-- Hide this text on small devices -->
     <div class="w3-col m6 w3-hide-small w3-padding-large">
       <p>Welcome to RideSafe.
       RideSafe was devoloped in order to tackle the unsuatibility of exsisting applications for riders of differing skills and disaplines.
-    RideSafe adapts as you progress to minimise false positive detections. RideSafe's algorithym has been tried and tested, producing results greater than all other tested wearable based competators </p>
+    RideSafe adapts as you progress to minimise false positive detections. RideSafe's algorithym has been tried and tested, producing results greater than all other tested wearable based competators.
+  Using machine learning, Ridesafe will only send an alert when you need it most and common drawbacks such as hard braking and dropping your phone wont trigger an alert.
+Originally devolopedas a proof of concept, Ridesafe is now the only mobile application using supervised machine learning in real-time for crash detection making it the most robust option avaible. </p>
     </div>
   </div>
 
@@ -105,30 +126,11 @@ Once RideSafe determines you need help - A text message will be sent to your cho
 <!-- Modal for full size images on click-->
 <div id="modal01" class="w3-modal w3-black" onclick="this.style.display='none'">
   <span class="w3-button w3-large w3-black w3-display-topright" title="Close Modal Image"><i class="fa fa-remove"></i></span>
-  <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
+  <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-32">
     <img id="img01" class="w3-image">
     <p id="caption" class="w3-opacity w3-large"></p>
   </div>
 </div>
-
-<!--
-Third Parallax Image with Portfolio Text
-<div class="bgimg-3 w3-display-container w3-opacity-min">
-  <div class="w3-display-middle">
-     <span class="w3-xxlarge w3-text-white w3-wide">CONTACT</span>
-  </div>
-</div>
--->
-<!-- Container (shameless plugs) -->
-<div class="w3-content w3-container w3-padding-64" id="contact">
-  <h3 class="w3-center">Downloads</h3>
-  <p class="w3-center"><em>Availible for free now! </em></p>
-<center>
-  <a href='https://play.google.com/store/apps/details?id=com.release.nanou.ridesafe&hl=en&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' class='center'/></a>
-</center>
-</div>
-
-
 
 
 
@@ -141,6 +143,10 @@ Third Parallax Image with Portfolio Text
   The site is currently written in python3/html.
   The Flask application runs on a custom built arm64 docker container running from my home on a RaspberryPi.
  </p>
+
+<!-- Container (About Section) -->
+
+
  <h3 class="w3-center">Want to help with algorithmm accuracy?</h3>
  <p>Visit my github and check out RideSafeDataCollection, This standalone application records all sensor data required to train the machine learning algorithym.
  Fell free to run the app while going for a cycle and using the inbuilt send button, you can ship the (Raw sensor )data to myself.
@@ -152,8 +158,19 @@ Third Parallax Image with Portfolio Text
 
 
 
+<!-- Container (shameless plugs) -->
+<div class="w3-content w3-container w3-padding-32" id="contact">
+  <h3 class="w3-center">Downloads</h3>
+  <p class="w3-center"><em>Availible for free now! </em></p>
+<center>
+  <a href='https://play.google.com/store/apps/details?id=com.release.nanou.ridesafe&hl=en&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="width:300px;height:150px;" class='center'/></a>
+</center>
+</div>
+
+
+
 <!-- Container (Contact Section) -->
-<div class="w3-content w3-container w3-padding-64" id="contact">
+<div class="w3-content w3-container w3-padding-32" id="contact">
   <h3 class="w3-center">Contact Me</h3>
   <p class="w3-center"><em>I'd love your feedback!</em></p>
 
@@ -213,6 +230,9 @@ function toggleFunction() {
         x.className = x.className.replace(" w3-show", "");
     }
 }
+
+
+
 </script>
 
 </body>

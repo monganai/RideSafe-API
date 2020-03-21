@@ -29,6 +29,14 @@ logging.basicConfig()
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
 
+@app.route('/')
+@app.route('/index')
+#@login_required
+@tracer.wrap()
+def index():
+    log.info('Index Get')
+    return render_template('index.html',title='Home')
+
 @app.route('/loadtd')
 def loadtd():
     CrashDataPoint.query.delete()
@@ -43,19 +51,11 @@ def loadtd():
             point.rotation=list[1]
             point.classification=list[2]
             db.session.add(point)
-            db.session.commit()
-
+        db.session.commit()
 
     return Response(status=200, mimetype = 'application/json')
 
-@app.route('/')
-@app.route('/index')
-@login_required
-@tracer.wrap()
-def index():
-    users = Post.query.all()
-    log.info('Index Get')
-    return render_template('index.html',title='Home', posts=users)
+
 
 @app.route('/crashPoint/getAll', methods=['GET'])
 @tracer.wrap()
@@ -83,8 +83,6 @@ def getAllPoints():
 
 @app.route('/crashPoint/add', methods=['POST'])
 #curl  -H "Content-Type: application/json" -d '{"username":"john","latitude":"56.66785675","longitude":"65.4344"}' 127.0.0.1:8000/crashPoint/add
-
-#@login_required
 def addCrashLocationPoint():
     point = CrashLocationPoint()
     incoming = request.get_json()
@@ -100,7 +98,6 @@ def addCrashLocationPoint():
 
 @app.route('/post/add', methods=['POST'])
 # curl  -H "Content-Type: application/json" -d '{"username":"john","body":"whats up, alri"}' 127.0.0.1:8000/post/add
-#@login_required
 def addPost():
     post = Post()
     incoming = request.get_json()
@@ -150,3 +147,17 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/gallery')
+@tracer.wrap()
+def gallery():
+    log.info('Gallery Accessed')
+    return render_template('gallery.html',title='App Gallery')
+
+
+@app.route('/CrashMap')
+@tracer.wrap()
+def crashMap():
+    log.info('Crashmap Viewed')
+    return render_template('map.html',title='App Gallery')
