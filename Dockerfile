@@ -10,6 +10,7 @@ ENV FLASK_APP=${FLASK_APP}
 COPY . /code/
 WORKDIR /code/app
 
+RUN pip install email_validator
 RUN pip install -r requirements.txt
 
 
