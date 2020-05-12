@@ -11,6 +11,7 @@ from datadog import initialize, statsd
 import os
 import redis
 from ddtrace import config
+import ddtrace.profiling.auto
 
 # Global config
 config.trace_headers([
@@ -35,13 +36,18 @@ app.logger.setLevel(logging.INFO)
 @app.route('/rt')
 @tracer.wrap()
 def rt():
-    host = os.environ["DD_AGENT_HOST"]
-    redis_port = 6379
-    redis_password = ""
-    r = redis.Redis(host=host, port=redis_port)
-    r.set("msg:hello", "Hello Redis!!!")
-    msg = r.get("msg:hello") 
-    log.info('Connection to redis suceeded')
+    try:
+        host = os.environ["DD_AGENT_HOST"]
+        redis_port = 30001
+        r = redis.Redis(host=host, port=redis_port)
+        r.set("msg:hello", "Hello Redis!!!")
+        msg = r.get("msg:hello") 
+        log.info('Connection to redis suceeded')
+
+    except Exception as e:
+        print(e)
+        log.info('Connection to redis failled')
+    
     return render_template('index.html',title='Home')
 
 
@@ -83,10 +89,17 @@ def loadtd():
 @app.route('/crashPoint/redis', methods=['GET'])
 @tracer.wrap()
 def getAllPointsre():
-    host = os.environ["DD_AGENT_HOST"]
-    redis_port = 6379
-    r = redis.Redis(host=host, port=redis_port)
-    log.info('Connection to redis suceeded')
+    try:
+        host = os.environ["DD_AGENT_HOST"]
+        redis_port = 30001
+        r = redis.Redis(host=host, port=redis_port)
+        r.set("crashpoint-redis", "working")
+        msg = r.keys() 
+        log.info('Connection to redis suceeded')
+    except Exception as e:
+        print(e)
+        log.info('Connection to redis failled')
+
     dict = {}
     i = 0
     s1 = 'latitude '

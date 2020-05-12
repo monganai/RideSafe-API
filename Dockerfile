@@ -11,6 +11,7 @@ COPY . /code/
 WORKDIR /code/app
 
 RUN pip install email_validator
+RUN pip install pip ddtrace[profiling]
 RUN pip install -r requirements.txt
 
 
