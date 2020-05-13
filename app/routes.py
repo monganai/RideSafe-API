@@ -98,7 +98,10 @@ def getAllPointsre():
         log.info('Connection to redis suceeded')
     except Exception as e:
         print(e)
-        log.info('Connection to redis failled')
+        log.info('Connection to redis failed')
+        root_span = tracer.current_root_span()
+        root_span.set_tag('error', 'true')
+        root_span.set_tag('error.message','connection to redis failed')
 
     dict = {}
     i = 0
