@@ -37,7 +37,13 @@ app.logger.setLevel(logging.INFO)
 # @login_required
 @tracer.wrap()
 def index():
-    return render_template('index.html', title = 'Home')
+    API_KEY = os.environ["DD_PROFILING_API_KEY"]
+    clientToken = os.environ["DD_CLIENT_TOKEN"]
+    applicationId = os.environ["DD_APPLICATION_ID"]
+    
+    
+    
+    return render_template('index.html', title = 'Home', applicationId = applicationId, clientToken = clientToken)
 
 
 @app.route('/gallery')
@@ -91,6 +97,8 @@ def register():
 
 @app.route("/line_chart")
 def line_chart():
+    clientToken = os.environ["DD_CLIENT_TOKEN"]
+    applicationId = os.environ["DD_APPLICATION_ID"]
     legend = 'Temperatures'
     temperatures = [73.7, 73.4, 73.8, 72.8, 68.7, 65.2, 
                     61.8, 58.7, 58.2, 58.3, 60.5, 65.7, 
@@ -98,11 +106,13 @@ def line_chart():
     times = ['12:00PM', '12:10PM', '12:20PM', '12:30PM', '12:40PM', '12:50PM', 
              '1:00PM', '1:10PM', '1:20PM', '1:30PM', '1:40PM', '1:50PM', 
              '2:00PM', '2:10PM', '2:20PM', '2:30PM', '2:40PM', '2:50PM']
-    return render_template('line_chart.html', values = temperatures, labels = times, legend = legend)
+    return render_template('line_chart.html', values = temperatures, labels = times, legend = legend, applicationId = applicationId, clientToken = clientToken)
 
 
 @app.route("/chart")
 def chart():
+    clientToken = os.environ["DD_CLIENT_TOKEN"]
+    applicationId = os.environ["DD_APPLICATION_ID"]
     glist = []
     rlist = []
     points = CrashLocationPoint.query.all()
@@ -111,7 +121,7 @@ def chart():
         rlist.append(point.longitude)
     legend = 'Gforce vs Rotation'
 
-    return render_template('line_chart.html', values = glist, labels = rlist, legend = legend)
+    return render_template('line_chart.html', values = glist, labels = rlist, legend = legend, applicationId = applicationId, clientToken = clientToken)
 
 
 # ################## API Endpoints #############################

@@ -5,7 +5,7 @@ metadata:
   annotations:
    ad.datadoghq.com/flapi.logs: '[{"source":"RideSafeAPI","service":"Flapi"}]'
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: flapi
@@ -14,10 +14,9 @@ spec:
       labels:
         app: flapi
     spec:
-      hostNetwork: true
       containers:
-        - name: flapi #profx861
-          image: monganai/flapi:redisf2
+        - name: flapi
+          image: monganai/flapi:envar
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -26,14 +25,26 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
+            - name: DD_ENV
+              value: "dev"
+            - name: DD_SERVICE
+              value: "RideSafeAPI"
+            - name: DD_TRACE_ANALYTICS_ENABLED
+              value: "true"
+            - name: DD_INTEGRATION_ANALYTICS_ENABLED
+              value: "true"
             - name: DD_AGENT_SERVICE_PORT
               value: "8126"
             - name: DD_AGENT_STATSD_PORT
               value: "8125"
             - name: DD_PROFILING_API_KEY
-              value: ""
+              value: "your API KEY"
+            - name: DD_CLIENT_TOKEN
+              value: "Your Client Token"
+            - name: DD_APPLICATION_ID
+              value: "Your Application ID"
             - name: DD_PROFILING_TAGS
-              value: "env:prod,service:flapi,version:1.0"
+              value: "env:dev,service:flapi,version:1.0"
             - name: DD_AGENT_HOST
               valueFrom:
                 fieldRef:
@@ -50,5 +61,4 @@ spec:
     - name: http
       protocol: TCP
       port: 8080
-  type: LoadBalancer
-
+      nodePort: 30000

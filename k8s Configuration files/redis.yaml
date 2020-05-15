@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: redis
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: redis
@@ -23,7 +23,6 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6379
-              hostPort: 6379
 ---
 apiVersion: v1
 kind: Service
@@ -34,4 +33,5 @@ spec:
     app: redis
   ports:
     - port: 6379
-
+      nodePort: 30001
+  type: LoadBalancer
