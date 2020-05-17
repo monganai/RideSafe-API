@@ -24,7 +24,15 @@
       });
     </script>
 
-
+<script src="static/Chart.bundle.min.js"></script>
+    <script src="static/utils.js"></script>
+	<style>
+	canvas {
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
 
   </head>
 
@@ -52,7 +60,8 @@ body, html {
 
 /* First image (Logo. Full height) */
 .bgimg-1 {
-  background-image: url('https://raw.githubusercontent.com/monganai/RideSafeDataCollection/master/graph.png');
+  background-image: url('https://p-qKFgO2.t2.n0.cdn.getcloudapp.com/items/nOu846PB/Image%202020-05-17%20at%209.43.16%20PM.png?v=202574a2f5e73de3c35e2284cf461082');
+
   min-height: 100%;
 }
 
@@ -171,6 +180,69 @@ Originally devolopedas a proof of concept, Ridesafe is now the only mobile appli
 </p>
 
 
+
+
+
+
+<div class="w3-content w3-container w3-padding-32" id="scatter">
+  <h3 class="w3-center">Live Data</h3>
+
+  <canvas id="canvas"></canvas>
+
+</div>
+<script>
+  var color = Chart.helpers.color;
+  function generateData() {
+    var data = [];
+    for (var i = 0; i < 7; i++) {
+      data.push({
+        x: randomScalingFactor(),
+        y: randomScalingFactor()
+      });
+    }
+    return data;
+  }
+
+  var scatterChartData = {
+    datasets: [{
+      label: 'Gforce',
+      borderColor: window.chartColors.red,
+      backgroundColor: color(window.chartColors.red).alpha(0.2).rgbString(),
+      data: generateData()
+    }, {
+      label: 'Rotation',
+      borderColor: window.chartColors.blue,
+      backgroundColor: color(window.chartColors.blue).alpha(0.2).rgbString(),
+      data: generateData()
+    }]
+  };
+
+  window.onload = function() {
+    var ctx = document.getElementById('canvas').getContext('2d');
+    window.myScatter = Chart.Scatter(ctx, {
+      data: scatterChartData,
+      options: {
+        title: {
+          display: true,
+        },
+      }
+    });
+  };
+
+  document.getElementById('canvas').addEventListener('click', function() {
+    scatterChartData.datasets.forEach(function(dataset) {
+      dataset.data = dataset.data.map(function() {
+        return {
+          x: randomScalingFactor(),
+          y: randomScalingFactor()
+        };
+      });
+    });
+    window.myScatter.update();
+  });
+</script>
+
+
 <!-- Container (shameless plugs) -->
 <div class="w3-content w3-container w3-padding-32" id="contact">
   <h3 class="w3-center">Downloads</h3>
@@ -179,7 +251,6 @@ Originally devolopedas a proof of concept, Ridesafe is now the only mobile appli
   <a href='https://play.google.com/store/apps/details?id=com.release.nanou.ridesafe&hl=en&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style="width:300px;height:150px;" class='center'/></a>
 </center>
 </div>
-
 
 
 <!-- Container (Contact Section) -->
@@ -193,7 +264,6 @@ Originally devolopedas a proof of concept, Ridesafe is now the only mobile appli
     <div class="w3-col m8 w3-panel">
       <div class="w3-large w3-margin-bottom">
         <i class="fa fa-map-marker fa-fw w3-hover-text-black w3-xlarge w3-margin-right"></i>Dublin, Ireland<br>
-        <i class="fa fa-phone fa-fw w3-hover-text-black w3-xlarge w3-margin-right"></i> Phone: +353 85176 7977<br>
         <i class="fa fa-envelope fa-fw w3-hover-text-black w3-xlarge w3-margin-right"></i> Email: nanoudge99@gmail.com<br>
       </div>
 

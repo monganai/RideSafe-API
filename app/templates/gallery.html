@@ -1,15 +1,15 @@
 <html>
 <head>
 
-    <title>RideSafe</title>
+    <title>RideSafe Gallery</title>
     <script
     src="https://www.datadoghq-browser-agent.com/datadog-rum-us.js"
     type="text/javascript">
   </script>
   <script>
     window.DD_RUM && window.DD_RUM.init({
-      clientToken: 'pub587c7197e63cd75a70f061ad7913676b',
-      applicationId: 'b2648a2b-bda1-4bd7-99f0-775ef0eb9a5e',
+      clientToken: '{{ clientToken }}',
+      applicationId: '{{ applicationId }}',
     });
   </script>
 
@@ -19,6 +19,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
+
+
+
 div.gallery {
   margin: 25px;
   border: 3px solid #ccc;
@@ -123,9 +126,6 @@ div.desc {
     </a>
     <div class="desc">A crash in terms of sensor Data</div>
   </div>
-
-
-
 
 </body>
 

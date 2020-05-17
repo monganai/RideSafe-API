@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: flapi
-          image: monganai/flapi:envar
+          image: monganai/flapi:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
