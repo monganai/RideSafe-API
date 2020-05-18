@@ -6,7 +6,7 @@
 Mobile Application backend/homepage for RideSafe.
 
 `flapi` is written mostly in python using flask, the frontend uses mostly html with some javascript.
-The app is fully integrated with Datadog and will require an agent deployed alongside flapi & redis to fucntion.
+The app is fully integrated with Datadog and will require an agent deployed alongside flapi & redis to function.
 
 ### `flapi` has the following features enabled by default:
 
@@ -33,7 +33,7 @@ Find flapi [here](https://hub.docker.com/repository/docker/monganai/flapi) on do
 
 Flapi will be exposed via port 8080 & nodePort 30000
 
-
+View the site running live [here!](http://www.ridesafe.duckdns.org:30000/)
 
 ![service_map](https://p-qKFgO2.t2.n0.cdn.getcloudapp.com/items/eDu6bXpY/Image%202020-05-18%20at%204.58.59%20PM.png?v=8b17c2957978dcbe67eb10c1d8df38ee)
 
