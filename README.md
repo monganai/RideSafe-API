@@ -33,6 +33,8 @@ Find flapi [here](https://hub.docker.com/repository/docker/monganai/flapi) on do
 
 Flapi will be exposed via port 8080 & nodePort 30000
 
+Note: RidesafeAPI is currently hosted locally in microk8s, the daemonset for the Datadog Agent is modified in order to work in this environment and probally wont work elsewhere.
+
 View the site running live [here!](http://www.ridesafe.duckdns.org:30000/)
 
 ![service_map](https://p-qKFgO2.t2.n0.cdn.getcloudapp.com/items/eDu6bXpY/Image%202020-05-18%20at%204.58.59%20PM.png?v=8b17c2957978dcbe67eb10c1d8df38ee)
