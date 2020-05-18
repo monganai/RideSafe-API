@@ -13,8 +13,6 @@
     });
   </script>
 
-
-
 <script type="text/javascript" src="https://www.datadoghq-browser-agent.com/datadog-logs-us.js"></script>
     <script>
       window.DD_LOGS && DD_LOGS.init({
@@ -35,8 +33,6 @@
 	</style>
 
   </head>
-
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -60,8 +56,7 @@ body, html {
 
 /* First image (Logo. Full height) */
 .bgimg-1 {
-  background-image: url('https://p-qKFgO2.t2.n0.cdn.getcloudapp.com/items/nOu846PB/Image%202020-05-17%20at%209.43.16%20PM.png?v=202574a2f5e73de3c35e2284cf461082');
-
+  background-image: url("{{url_for('static', filename='header.png')}}");
   min-height: 100%;
 }
 
@@ -117,8 +112,6 @@ body, html {
 
 
 
-
-
 <!-- Container (About Section) -->
 <div class="w3-content w3-container w3-padding-32" id="about">
   <h3 class="w3-center">ABOUT US</h3>
@@ -129,7 +122,7 @@ Once RideSafe determines you need help - A text message will be sent to your cho
   <div class="w3-row">
     <div class="w3-col m6 w3-center w3-padding-large">
       <p><b><i class="fa fa-user w3-margin-right"></i>RideSafe</b></p><br>
-      <img src="https://raw.githubusercontent.com/monganai/RideSafeDataCollection/master/icon.png" class="w3-round w3-image" alt="Photo of Me" width="350" height="200">
+      <img src="{{url_for('static', filename='icon.png')}}" class="w3-round w3-image" alt="Photo of Me" width="350" height="200">
     </div>
 
     <!-- Hide this text on small devices -->

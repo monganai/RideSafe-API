@@ -10,13 +10,30 @@ from app import app, db
 import ddtrace.profiling.auto
 from datetime import time
 
+
+# ############## Environment Variables #####################
+
+API_KEY = os.environ["DD_PROFILING_API_KEY"]
+clientToken = os.environ["DD_CLIENT_TOKEN"]
+applicationId = os.environ["DD_APPLICATION_ID"]
+host = os.environ["DD_AGENT_HOST"]
+redis_port = 30001
+
+############# DogStatsD & Tracer Configuration ###############
+
+options = {
+    'statsd_host': host,
+    'statsd_port':8125
+}
+initialize(**options)
+
 # Global config - Tracer
 config.trace_headers([
     'user-agent', 
     'transfer-encoding', 
 ])
 
-# ############ Log Configuration ########################
+############## Log Configuration ########################
 
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
           '[dd.trace_id = %(dd.trace_id)s dd.span_id = %(dd.span_id)s] '
@@ -29,47 +46,48 @@ logging.basicConfig(format = FORMAT)
 app.logger.addHandler(logging.StreamHandler())
 app.logger.setLevel(logging.INFO)
 
-# ############## User Interface Endpoints #####################
-
-API_KEY = os.environ["DD_PROFILING_API_KEY"]
-clientToken = os.environ["DD_CLIENT_TOKEN"]
-applicationId = os.environ["DD_APPLICATION_ID"]
-host = os.environ["DD_AGENT_HOST"]
-redis_port = 30001
-
-
-
-
 ############ Backend Methods ###############################
 @tracer.wrap()
-def getCrashPoints():
+def getCrashDataPoints():
     glist = []
     rlist = []
-    points = CrashLocationPoint.query.all()
+    points = CrashDataPoint.query.all()
     for point in points:
         glist.append(point.gforce)
-        rlist.append(point.longitude)
-        
+        rlist.append(point.rotation)
+    statsd.gauge('RideSafe.crashDataCount.gauge', len(glist), tags=["app:flapi"])
     return glist, rlist
 
-############################################################
+@tracer.wrap()
+def getCrashLocationPoints():
+    latList = []
+    longList = []
+    points = CrashDataPoint.query.all()
+    for point in points:
+        latList.append(point.gfo)
+        longList.append(point.rotation)
+    statsd.gauge('RideSafe.crashLocationCount.gauge', len(latList), tags=["app:flapi"]) 
+    return latList, longList
 
+
+#################### Ui Endpoints ##########################
 
 # Index page
 @app.route('/', methods = ['GET'])
 @tracer.wrap()
 def index(): 
-    glist, rlist = getCrashPoints()    
+    glist, rlist = getCrashDataPoints()
+    statsd.event('Index Page reached', 'The index page has been accessed', alert_type='info', tags=['app:flapi'])    
     return render_template('index.html', title = 'Home', applicationId = applicationId, clientToken = clientToken, glist = glist, rlist = rlist)
 
-
+# Gallery
 @app.route('/gallery', methods = ['GET'])
 @tracer.wrap()
 def gallery():
     log.info('Gallery Accessed')
     return render_template('gallery.html', title = 'App Gallery', applicationId = applicationId, clientToken = clientToken)
 
-
+# Login
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
 
@@ -89,12 +107,13 @@ def login():
 
     return render_template('login.html', title = 'Sign In', form = form)
 
-
+# Logout
 @app.route('/logout', methods = ['GET'])
 def logout():
     logout_user()
     return redirect(url_for('index'))
 
+# Register
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -109,8 +128,9 @@ def register():
         return redirect(url_for('login'))
     return render_template('register.html', title = 'Register', form = form)
 
-# ################### charts ##################################
+##################### charts ##################################
 
+# Line Chart
 @app.route("/chart/wip", methods = ['GET'])
 def chart():
     glist = []
@@ -215,7 +235,4 @@ def add_crash_location_point():
     app.logger.info('point created by %s added', point.user_id)
 
     return Response("{'latitude': incoming['latitude']}", status = 200, mimetype = 'application/json')
-
-
-
 
