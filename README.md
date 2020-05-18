@@ -1,5 +1,8 @@
 # RideSafeAPI
 
+<img src="https://p-qKFgO2.t2.n0.cdn.getcloudapp.com/items/5zu1Rr6v/Image%202020-05-18%20at%205.00.35%20PM.png?v=dfd7fc30e235275f44caf3b5a5fb3284" width="100" height="100">
+
+
 Mobile Application backend/homepage for RideSafe.
 
 `flapi` is written mostly in python using flask, the frontend uses mostly html with some javascript.
