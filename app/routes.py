@@ -9,7 +9,7 @@ import redis, os, json, logging
 from app import app, db
 import ddtrace.profiling.auto
 from datetime import time
-
+import requests 
 
 # ############## Environment Variables #####################
 
@@ -18,6 +18,7 @@ clientToken = os.environ["DD_CLIENT_TOKEN"]
 applicationId = os.environ["DD_APPLICATION_ID"]
 host = os.environ["DD_AGENT_HOST"]
 redis_port = 30001
+tomcat_port = 30002
 
 ############# DogStatsD & Tracer Configuration ###############
 
@@ -235,4 +236,36 @@ def add_crash_location_point():
     app.logger.info('point created by %s added', point.user_id)
 
     return Response("{'latitude': incoming['latitude']}", status = 200, mimetype = 'application/json')
+
+
+
+@app.route('/crash/verify', methods = ['POST'])
+def verify_crash_point():
+    incoming = request.get_json()
+    g = incoming['g']
+    x = incoming['x']
+    y = incoming['y']
+    z = incoming['z']
+   
+    API_ENDPOINT ='http://' + str(host) + ':' + str(tomcat_port) + '/regression/classify'
+
+    # data to be sent to ridesafe-learning
+    data = {'g': g, 
+            'x': x, 
+            'y': y, 
+            'z': z } 
+    # sending post request and saving response as response object 
+    r = requests.post(url = API_ENDPOINT, data = data)   
+    # extracting response text  
+    reply = r.text 
+    status = 'false'
+    if(float(reply) > 0.7):
+        status = 'true'
+    app.logger.info('crash detected status: %s ', status)
+
+    return Response("{'crash status':" + status + "}", status = 200, mimetype = 'application/json')
+
+# Example Request: curl  -H "Content-Type: application/json" -d '{"g": 45,"x": 0.8676,"x":0.7676,"z": 0.77676767}' localhost:30000/crash/verify
+
+
 

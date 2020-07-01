@@ -1,35 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flapi
+  name: ridesafe
   annotations:
-   ad.datadoghq.com/flapi.logs: '[{"source":"RideSafeAPI","service":"Flapi"}]'
+   ad.datadoghq.com/ridesafe.logs: '[{"source":"ridesafe","service":"ridesafe"}]'
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: flapi
+      app: ridesafe
   template:
     metadata:
       labels:
-        app: flapi
+        app: ridesafe
     spec:
       containers:
-        - name: flapi
-          image: monganai/flapi:latest
+        - name: ridesafe
+          image: monganai/flapi:tomcat
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-            - name: DD_AGENT_SERVICE_HOST
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
             - name: DD_ENV
               value: "dev"
             - name: DD_SERVICE
               value: "RideSafeAPI"
             - name: DD_TRACE_ANALYTICS_ENABLED
+              value: "true"
+            - name: DD_RUNTIME_METRICS_ENABLED
+              value: "true"
+            - name: DD_REDIS_ANALYTICS_ENABLED
               value: "true"
             - name: DD_INTEGRATION_ANALYTICS_ENABLED
               value: "true"
@@ -38,13 +38,13 @@ spec:
             - name: DD_AGENT_STATSD_PORT
               value: "8125"
             - name: DD_PROFILING_API_KEY
-              value: "your API KEY"
+              value: ""
             - name: DD_CLIENT_TOKEN
-              value: "Your Client Token"
+              value: ""
             - name: DD_APPLICATION_ID
-              value: "Your Application ID"
+              value: ""
             - name: DD_PROFILING_TAGS
-              value: "env:dev,service:flapi,version:1.0"
+              value: "env:dev,service:RideSafe,version:1.0"
             - name: DD_AGENT_HOST
               valueFrom:
                 fieldRef:
@@ -53,12 +53,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: flapi
+  name: ridesafe
 spec:
   selector:
-    app: flapi
+    app: ridesafe
   ports:
     - name: http
       protocol: TCP
       port: 8080
       nodePort: 30000
+  type: LoadBalancer
