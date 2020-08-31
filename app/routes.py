@@ -13,7 +13,6 @@ import requests
 
 # ############## Environment Variables #####################
 
-API_KEY = os.environ["DD_PROFILING_API_KEY"]
 clientToken = os.environ["DD_CLIENT_TOKEN"]
 applicationId = os.environ["DD_APPLICATION_ID"]
 host = os.environ["DD_AGENT_HOST"]
@@ -37,15 +36,11 @@ config.trace_headers([
 ############## Log Configuration ########################
 
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
-          '[dd.trace_id = %(dd.trace_id)s dd.span_id = %(dd.span_id)s] '
+          '[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
           '- %(message)s')
-
-logging.basicConfig(format = FORMAT)
+logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
-logging.basicConfig(format = FORMAT)
-app.logger.addHandler(logging.StreamHandler())
-app.logger.setLevel(logging.INFO)
 
 ############ Backend Methods ###############################
 @tracer.wrap()
@@ -233,7 +228,7 @@ def add_crash_location_point():
     point.user_id = incoming['username']
     db.session.add(point)
     db.session.commit()
-    app.logger.info('point created by %s added', point.user_id)
+    log.info('point created by %s added', point.user_id)
 
     return Response("{'latitude': incoming['latitude']}", status = 200, mimetype = 'application/json')
 
@@ -261,7 +256,7 @@ def verify_crash_point():
     status = 'false'
     if(float(reply) > 0.7):
         status = 'true'
-    app.logger.info('crash detected status: %s ', status)
+    log.info('crash detected status: %s ', status)
 
     return Response("{'crash status':" + status + "}", status = 200, mimetype = 'application/json')
 

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ridesafe
-          image: monganai/flapi:tomcat
+          image: monganai/ridesafeapi:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -37,8 +37,6 @@ spec:
               value: "8126"
             - name: DD_AGENT_STATSD_PORT
               value: "8125"
-            - name: DD_PROFILING_API_KEY
-              value: ""
             - name: DD_CLIENT_TOKEN
               value: ""
             - name: DD_APPLICATION_ID
