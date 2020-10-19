@@ -35,6 +35,14 @@ config.trace_headers([
 
 ############## Log Configuration ########################
 
+werkzeug = logging.getLogger('werkzeug')
+if len(werkzeug.handlers) == 1:
+    formatter = logging.Formatter('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
+          '[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
+          '- %(message)s')
+    werkzeug.handlers[0].setFormatter(formatter)
+
+
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
           '[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
           '- %(message)s')
@@ -73,7 +81,6 @@ def getCrashLocationPoints():
 @tracer.wrap()
 def index(): 
     glist, rlist = getCrashDataPoints()
-    statsd.event('Index Page reached', 'The index page has been accessed', alert_type='info', tags=['app:flapi'])    
     return render_template('index.html', title = 'Home', applicationId = applicationId, clientToken = clientToken, glist = glist, rlist = rlist)
 
 # Gallery
@@ -232,8 +239,6 @@ def add_crash_location_point():
 
     return Response("{'latitude': incoming['latitude']}", status = 200, mimetype = 'application/json')
 
-
-
 @app.route('/crash/verify', methods = ['POST'])
 def verify_crash_point():
     incoming = request.get_json()
@@ -243,7 +248,6 @@ def verify_crash_point():
     z = incoming['z']
    
     API_ENDPOINT ='http://' + str(host) + ':' + str(tomcat_port) + '/regression/classify'
-
     # data to be sent to ridesafe-learning
     data = {'g': g, 
             'x': x, 

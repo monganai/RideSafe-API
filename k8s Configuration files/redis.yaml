@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: redis
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: redis
@@ -13,9 +13,12 @@ spec:
         ad.datadoghq.com/redis.check_names: '["redisdb"]'
         ad.datadoghq.com/redis.init_configs: '[{}]'
         ad.datadoghq.com/redis.instances: '[{"host": "%%host%%","port":"%%port%%"}]'
-        ad.datadoghq.com/redis.logs: '[{"source":"redis","service":"RidesafeAPI"}]'
+        ad.datadoghq.com/redis.logs: '[{"source":"redis","service":"RideSafeAPI-REDIS"}]'
+        ad.datadoghq.com/tags: '{"type": "cache","usage": "RideSafeAPI"}'
       labels:
         app: redis
+        location: eu
+
     spec:
       containers:
         - name: redis
@@ -23,6 +26,7 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6379
+
 ---
 apiVersion: v1
 kind: Service

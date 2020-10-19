@@ -2,8 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ridesafe
-  annotations:
-   ad.datadoghq.com/ridesafe.logs: '[{"source":"ridesafe","service":"ridesafe"}]'
+  labels:
+    tags.datadoghq.com/env: "dev"
+    tags.datadoghq.com/service: "RideSafeAPI"
+    tags.datadoghq.com/version: "2.0"
 spec:
   replicas: 3
   selector:
@@ -13,10 +15,18 @@ spec:
     metadata:
       labels:
         app: ridesafe
+        tags.datadoghq.com/env: "dev"
+        tags.datadoghq.com/service: "RideSafeAPI"
+        tags.datadoghq.com/version: "2.0"
+      annotations:
+        ad.datadoghq.com/ridesafe.tags: '{"lang": "python","service_port": "30000"}'
+        ad.datadoghq.com/ridesafe.logs: '[{"source":"ridesafe-py","service":"RideSafeAPI"}]'
+        ad.datadoghq.com/tags: '{"type": "main","usage": "RideSafeAPI"}'
+
     spec:
       containers:
         - name: ridesafe
-          image: monganai/ridesafeapi:latest
+          image: monganai/ridesafeapi:logz
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -25,24 +35,22 @@ spec:
               value: "dev"
             - name: DD_SERVICE
               value: "RideSafeAPI"
+            - name: DD_VERSION
+              value: "2.0"
             - name: DD_TRACE_ANALYTICS_ENABLED
               value: "true"
+            - name: DATADOG_TRACE_DEBUG
+              value: "false"
             - name: DD_RUNTIME_METRICS_ENABLED
               value: "true"
             - name: DD_REDIS_ANALYTICS_ENABLED
               value: "true"
             - name: DD_INTEGRATION_ANALYTICS_ENABLED
               value: "true"
-            - name: DD_AGENT_SERVICE_PORT
-              value: "8126"
-            - name: DD_AGENT_STATSD_PORT
-              value: "8125"
             - name: DD_CLIENT_TOKEN
               value: ""
             - name: DD_APPLICATION_ID
               value: ""
-            - name: DD_PROFILING_TAGS
-              value: "env:dev,service:RideSafe,version:1.0"
             - name: DD_AGENT_HOST
               valueFrom:
                 fieldRef:
