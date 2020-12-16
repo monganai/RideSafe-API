@@ -11,6 +11,7 @@ import ddtrace.profiling.auto
 from datetime import time
 import requests 
 
+
 # ############## Environment Variables #####################
 
 clientToken = os.environ["DD_CLIENT_TOKEN"]
@@ -49,6 +50,7 @@ FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
+
 
 ############ Backend Methods ###############################
 @tracer.wrap()
