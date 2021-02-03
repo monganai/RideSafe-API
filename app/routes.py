@@ -243,13 +243,13 @@ def add_crash_location_point():
 
 @app.route('/crash/verify', methods = ['POST'])
 def verify_crash_point():
+    API_ENDPOINT ='http://' + str(host) + ':' + str(tomcat_port) + '/regression/classify'
     incoming = request.get_json()
     g = incoming['g']
     x = incoming['x']
     y = incoming['y']
     z = incoming['z']
    
-    API_ENDPOINT ='http://' + str(host) + ':' + str(tomcat_port) + '/regression/classify'
     # data to be sent to ridesafe-learning
     data = {'g': g, 
             'x': x, 
@@ -262,11 +262,11 @@ def verify_crash_point():
     status = 'false'
     if(float(reply) > 0.7):
         status = 'true'
-    log.info('crash detected status: %s ', status)
+    log.info('crash detected status: %s, value: %d' , status, reply)
 
     return Response("{'crash status':" + status + "}", status = 200, mimetype = 'application/json')
 
-# Example Request: curl  -H "Content-Type: application/json" -d '{"g": 45,"x": 0.8676,"x":0.7676,"z": 0.77676767}' localhost:30000/crash/verify
+# Example Request: curl  -H "Content-Type: application/json" -d '{"g": 45,"x": 0.8676,"y":0.7676,"z": 0.77676767}' localhost:30000/crash/verify
 
 
 
