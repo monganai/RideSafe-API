@@ -1,6 +1,8 @@
 from flask import render_template, flash, redirect, url_for, request, Response
 from app.forms import LoginForm, RegistrationForm
 from flask_login import logout_user, current_user, login_user, login_required
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.urls import url_parse
 from app.models import User, CrashLocationPoint, CrashDataPoint
 from ddtrace import tracer, config, patch_all; patch_all(logging = True)
@@ -10,7 +12,6 @@ from app import app, db
 import ddtrace.profiling.auto
 from datetime import time
 import requests 
-
 
 # ############## Environment Variables #####################
 
@@ -50,6 +51,27 @@ FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
+
+
+############### Rate Limiting Config #######################
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["3600 per hour"]
+)
+
+
+##############  Track the hackers! (404 error handling) ######################
+
+@tracer.wrap()
+@app.errorhandler(404)
+def not_found(e): 
+    root_span = tracer.current_root_span()
+    ip = request.environ.get('HTTP_X_REAL_IP', request.remote_addr)
+    root_span.set_tag("originating_ip", ip)
+    root_span.set_tag('http.status_code', '404')
+    return render_template('404.html', applicationId = applicationId, clientToken = clientToken)
 
 
 ############ Backend Methods ###############################
@@ -93,6 +115,7 @@ def gallery():
     return render_template('gallery.html', title = 'App Gallery', applicationId = applicationId, clientToken = clientToken)
 
 # Login
+@limiter.limit("5 per minute")
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
 
@@ -119,6 +142,7 @@ def logout():
     return redirect(url_for('index'))
 
 # Register
+@limiter.limit("5 per minute")
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -153,6 +177,7 @@ def chart():
 
 
 # Load training Data into Database
+@limiter.limit("5 per minute")
 @app.route('/loadtd', methods = ['GET'])
 def loadtd():
     CrashDataPoint.query.delete()
@@ -228,6 +253,7 @@ def get_all_points():
 # Add a crashpoint to the Database - RidesafeMTB Application
 # Example Request: curl  -H "Content-Type: application/json" -d '{"username":"john","latitude":"56.66785675","longitude":"65.4344"}' 127.0.0.1:8000/crashPoint/add
 
+@limiter.limit("5 per minute")
 @app.route('/crashPoint/add', methods = ['POST'])
 def add_crash_location_point():
     point = CrashLocationPoint()
@@ -241,6 +267,7 @@ def add_crash_location_point():
 
     return Response("{'latitude': incoming['latitude']}", status = 200, mimetype = 'application/json')
 
+@limiter.limit("3600 per minute")
 @app.route('/crash/verify', methods = ['POST'])
 def verify_crash_point():
     API_ENDPOINT ='http://' + str(host) + ':' + str(tomcat_port) + '/regression/classify'
