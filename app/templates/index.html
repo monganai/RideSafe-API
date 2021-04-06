@@ -10,6 +10,10 @@
     window.DD_RUM && window.DD_RUM.init({
       clientToken: '{{ clientToken }}',
       applicationId: '{{ applicationId }}',
+      version: '5.0',
+      service: 'RideSafeAPI',
+      env: 'dev',
+      allowedTracingOrigins: ["http://www.ridesafe.duckdns.org/", "http://www.ridesafe.duckdns.org/*", "*", "/", "/*", "/gallery"],
     });
   </script>
 
