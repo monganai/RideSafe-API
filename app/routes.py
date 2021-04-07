@@ -37,20 +37,20 @@ config.trace_headers([
 
 ############## Log Configuration ########################
 
-werkzeug = logging.getLogger('werkzeug')
-if len(werkzeug.handlers) == 1:
-    formatter = logging.Formatter('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
-          '[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
-          '- %(message)s')
-    werkzeug.handlers[0].setFormatter(formatter)
-
 
 FORMAT = ('%(asctime)s %(levelname)s [%(name)s] [%(filename)s:%(lineno)d] '
           '[dd.service=%(dd.service)s dd.env=%(dd.env)s dd.version=%(dd.version)s dd.trace_id=%(dd.trace_id)s dd.span_id=%(dd.span_id)s] '
           '- %(message)s')
+
+werkzeug = logging.getLogger('werkzeug')
+if len(werkzeug.handlers) == 1:
+    formatter = logging.Formatter(FORMAT)
+    werkzeug.handlers[0].setFormatter(formatter)
+
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger(__name__)
 log.level = logging.INFO
+
 
 
 ############### Rate Limiting Config #######################
@@ -113,6 +113,19 @@ def index():
 def gallery():
     log.info('Gallery Accessed')
     return render_template('gallery.html', title = 'App Gallery', applicationId = applicationId, clientToken = clientToken)
+
+
+
+
+
+
+#File handle
+@app.route("/favicon.ico", methods = ['GET'])
+def favicon():
+    log.info('/favicon.ico requested')
+    return Response(status = 200, mimetype = 'application/json')
+
+
 
 # Login
 @limiter.limit("5 per minute")
@@ -198,8 +211,8 @@ def loadtd():
 
 
 # Return all crashpoints as JSON - Redis interaction - Not in use 
-@app.route('/crashPoint/redis', methods = ['GET'])
 @tracer.wrap()
+@app.route('/crashPoint/redis', methods = ['GET'])
 def get_all_pointsre():
     dict = {}
     i = 0
@@ -289,7 +302,7 @@ def verify_crash_point():
     status = 'false'
     if(float(reply) > 0.7):
         status = 'true'
-    log.info('crash detected status: %s, value: %d' , status, reply)
+    #log.info('crash detected status: %s, value: %s' , status, reply)
 
     return Response("{'crash status':" + status + "}", status = 200, mimetype = 'application/json')
 
